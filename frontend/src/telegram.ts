@@ -109,6 +109,7 @@ export function initTelegramMiniApp(): () => void {
   const safely = (action: (() => void) | undefined) => {
     try { action?.(); } catch { /* Keep the local-browser fallback usable if Telegram's host API fails. */ }
   };
+  document.documentElement.setAttribute('data-telegram-webapp', 'true');
   safely(() => webApp.expand?.());
   safely(() => webApp.requestFullscreen?.());
   updateTheme();
