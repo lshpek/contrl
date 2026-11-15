@@ -1371,3 +1371,15 @@ tbody tr:hover { background: var(--bg-hover); }
 }
 .portal-hero-copy h2 { margin: 0 0 4px; font-size: 18px; color: #f4f7ff; }
 .portal-hero-copy p { margin: 0; font-size: 13px; color: #b7c8e8; }
+
+@media (max-width: 640px) {
+  html, body, .app-shell, .main-area { max-width: 100vw; overflow-x: hidden; }
+  .topbar { padding: 0 10px; gap: 6px; }
+  .topbar-right { gap: 6px; }
+  .breadcrumbs span, .breadcrumbs i { display: none; }
+  .search-trigger span, .search-trigger kbd { display: none; }
+  .search-trigger { padding: 0 9px; }
+  .quick-create-btn span { display: none; }
+  .quick-create-btn { padding: 0 9px; }
+  .connection-dot span { display: none; }
+}

@@ -21,6 +21,7 @@ export interface TelegramWebApp {
   contentSafeAreaInset?: Partial<Record<'top' | 'right' | 'bottom' | 'left', number>>;
   ready?: () => void;
   expand?: () => void;
+  requestFullscreen?: () => void;
   onEvent?: (event: TelegramEvent, handler: () => void) => void;
   offEvent?: (event: TelegramEvent, handler: () => void) => void;
 }
@@ -109,6 +110,7 @@ export function initTelegramMiniApp(): () => void {
     try { action?.(); } catch { /* Keep the local-browser fallback usable if Telegram's host API fails. */ }
   };
   safely(() => webApp.expand?.());
+  safely(() => webApp.requestFullscreen?.());
   updateTheme();
   updateViewport();
   updateSafeArea();
