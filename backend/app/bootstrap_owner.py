@@ -180,7 +180,7 @@ def bootstrap_owner(db: Session, username: str, password: str) -> User:
         password_hash=hash_password(password),
         is_active=True,
         is_owner=True,
-        must_change_password=True,
+        must_change_password=False,
         roles=[role],
     )
     db.add(user)
