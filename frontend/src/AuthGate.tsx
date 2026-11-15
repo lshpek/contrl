@@ -202,7 +202,7 @@ export default function AuthGate() {
   if (user.must_change_password) {
     return <ChangePassword user={user} onChanged={setUser} onLogout={() => void logout()} />;
   }
-  if (user.roles.includes('client') && !user.is_owner) {
+  if (!user.is_owner && (user.roles.includes('client') || user.roles.length === 0)) {
     return <PortalApp user={user} onLogout={() => void logout()} />;
   }
   return <App profile={user} onLogout={() => void logout()} />;

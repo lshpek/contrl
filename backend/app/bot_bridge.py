@@ -15,6 +15,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from .auth import AccessContext, hash_password, require_permission
+from .bootstrap_owner import seed_authorization
 from .config import settings
 from .database import get_db
 from .models import (
@@ -130,6 +131,9 @@ def bot_intake_order(
     user = db.scalar(select(User).where(User.telegram_user_id == tg_id))
     if user is None:
         client_role = db.scalar(select(Role).where(Role.slug == "client", Role.is_active.is_(True)))
+        if client_role is None:
+            seed_authorization(db)
+            client_role = db.scalar(select(Role).where(Role.slug == "client", Role.is_active.is_(True)))
         base_slug = (tg_user.lstrip("@").lower() if tg_user else f"tg_{tg_id}")[:60]
         candidate = base_slug
         suffix = 1
@@ -368,6 +372,9 @@ def bot_register_user(
     user = db.scalar(select(User).where(User.telegram_user_id == tg_id))
     if user is None:
         client_role = db.scalar(select(Role).where(Role.slug == "client", Role.is_active.is_(True)))
+        if client_role is None:
+            seed_authorization(db)
+            client_role = db.scalar(select(Role).where(Role.slug == "client", Role.is_active.is_(True)))
         base_slug = (tg_user.lstrip("@").lower() if tg_user else f"tg_{tg_id}")[:60]
         candidate = base_slug
         suffix = 1
@@ -385,8 +392,16 @@ def bot_register_user(
             roles=[client_role] if client_role else [],
         )
         db.add(user)
-    elif user.customer_id is None:
-        user.customer_id = client.id
+    else:
+        if user.customer_id is None:
+            user.customer_id = client.id
+        if not user.is_owner and not user.roles:
+            client_role = db.scalar(select(Role).where(Role.slug == "client", Role.is_active.is_(True)))
+            if client_role is None:
+                seed_authorization(db)
+                client_role = db.scalar(select(Role).where(Role.slug == "client", Role.is_active.is_(True)))
+            if client_role:
+                user.roles = [client_role]
 
     db.commit()
     return {"ok": True, "client_id": client.id, "user_id": user.id, "username": user.username}
